@@ -3,10 +3,13 @@ import { UserDataTypes } from "../validations/userSchema";
 import { randomUUID } from "node:crypto";
 import { hash } from "bcrypt";
 import { AppError } from "../errors/appError";
+import { read } from "node:fs";
+import { promises } from "node:dns";
 
 export type UserRepositoryTypes = {
   create(data: CreateUserDataType): Promise<CreateUserDataType | undefined>;
-  getUserByEmail(email:string): Promise<CreateUserDataType | undefined>;
+  getUserByEmail(email: string): Promise<CreateUserDataType | undefined>;
+  getUserByID(id: string): Promise<Partial<CreateUserDataType> | undefined>;
 };
 
 export const userServices = {
@@ -32,6 +35,20 @@ export const userServices = {
       userCreated.password = "*".repeat(userCreated.password.length);
 
       return userCreated;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async read(id: string, repositories: UserRepositoryTypes) {
+    try {
+      const user = await repositories.getUserByID(id);
+
+      if (!user) throw new AppError("user not found", 404);
+
+      delete user.password;
+
+      return user;
     } catch (error) {
       throw error;
     }
