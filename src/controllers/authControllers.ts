@@ -8,7 +8,17 @@ export const authControllers = {
     try {
       const { email, password } = authSchema.parse(req.body);
 
-      const { id } = await authServices.login({ email, password }, userRepository);
+      const { id, token } = await authServices.login(
+        { email, password },
+        userRepository
+      );
+
+      res.cookie("token", token, {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        maxAge: 1000 * 60 * 60 * 24, // 24 hours
+      });
 
       res.status(200).json({ message: "Login completed", id });
     } catch (error) {

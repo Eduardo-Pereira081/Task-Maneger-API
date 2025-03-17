@@ -9,7 +9,7 @@ export const userRepository = {
       const db = await sqliteConnection();
 
       const query = `
-    INSERT INTO users (id, name, password)
+    INSERT INTO users (id, name, email, password)
     VALUES(?,?,?,?)
     `;
 
@@ -26,7 +26,7 @@ export const userRepository = {
       const db = await sqliteConnection();
 
       const query = `
-        INSERT * FROM users WHERE email = ?
+        SELECT * FROM users WHERE email = ?
         `;
 
       const user = await db.get(query, email);
